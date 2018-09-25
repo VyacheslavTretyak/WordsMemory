@@ -3,10 +3,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:WordsMemory"
         mc:Ignorable="d"
-        Title="Words Memory" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+		TextElement.Foreground="{DynamicResource MaterialDesignBody}"		
+        Background="{DynamicResource MaterialDesignPaper}"
+		TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+		Title="Words Memory" Height="300" Width="350"
+		ResizeMode="NoResize">
+	<Grid Margin="20">
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<TextBox x:Name="tbWord" Grid.Row="0" materialDesign:HintAssist.Hint="word" Margin="20"/>
+		<TextBox x:Name="tbTranslate" Grid.Row="1" materialDesign:HintAssist.Hint="translate" Margin="20"/>
+		<Button x:Name="btnAddWord" Grid.Row="2" Style="{StaticResource MaterialDesignRaisedAccentButton}" Width="100" ToolTip="Resource name: MaterialDesignRaisedAccentButton">Add</Button>
+	</Grid>
 </Window>
