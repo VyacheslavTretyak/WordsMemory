@@ -1,0 +1,40 @@
+﻿<Window x:Class="WordsMemory.WordShowing"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:WordsMemory"
+        mc:Ignorable="d"
+		TextElement.Foreground="{DynamicResource MaterialDesignBody}"		      
+		TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+        Title="Word Showing" Height="100" Width="200"
+		AllowsTransparency="true" WindowStyle="None">
+	<Window.Background>
+		<SolidColorBrush Opacity="0.1" Color="White"/>
+	</Window.Background>	
+
+	<Grid>
+		<Grid.Resources>
+			<ResourceDictionary>
+				<ResourceDictionary.MergedDictionaries>
+					<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
+				</ResourceDictionary.MergedDictionaries>
+			</ResourceDictionary>
+		</Grid.Resources>
+		<materialDesign:Flipper Style="{StaticResource MaterialDesignCardFlipper}" IsFlippedChanged="Flipper_IsFlippedChanged">
+			<materialDesign:Flipper.FrontContent>
+				<Button Width="200" Height="100" Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}">
+					WORD
+				</Button>
+			</materialDesign:Flipper.FrontContent>
+			<materialDesign:Flipper.BackContent>
+				<Button Width="200" Height="100" Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}">
+					Translate
+				</Button>
+			</materialDesign:Flipper.BackContent>
+		</materialDesign:Flipper>
+	</Grid>
+</Window>
