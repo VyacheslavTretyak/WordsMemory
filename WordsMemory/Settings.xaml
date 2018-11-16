@@ -38,25 +38,16 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 			<TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}">Hours</TextBlock>
-			<TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100"></TextBox>
+			<TextBox Name="TextBoxHours" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100" PreviewTextInput="textbox_OnlyNumeric"></TextBox>
 
-			<TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}">Days</TextBlock>
-			<TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100"></TextBox>
+			<TextBlock  Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}">Days</TextBlock>
+			<TextBox Name="TextBoxDays" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100" PreviewTextInput="textbox_OnlyNumeric"></TextBox>
 
 			<TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}">Weeks</TextBlock>
-			<TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100"></TextBox>
+			<TextBox Name="TextBoxWeeks" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" AcceptsReturn="True" Width="100" PreviewTextInput="textbox_OnlyNumeric"></TextBox>
 
-			<TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}">Ask</TextBlock>
-			<ComboBox FontSize="18" Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFloatingHintComboBox}">
-				<ComboBoxItem IsSelected="True">
-					Word
-				</ComboBoxItem>
-				<ComboBoxItem>
-					Translate
-				</ComboBoxItem>
-				<ComboBoxItem>
-					Both (Random)
-				</ComboBoxItem>				
+			<TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin= "16 0" Style="{StaticResource MaterialDesignTitleTextBlock}" >Ask</TextBlock>
+			<ComboBox  Name="ComboBoxAsk" FontSize="18" Grid.Row="3" Grid.Column="1" Style="{StaticResource MaterialDesignFloatingHintComboBox}" ToolTip="Ask words, or ask translate, or ask both variants" PreviewTextInput="textbox_OnlyNumeric">				
 			</ComboBox>			
 		</Grid>
 		<Grid Grid.Row="2" Margin="0 16">

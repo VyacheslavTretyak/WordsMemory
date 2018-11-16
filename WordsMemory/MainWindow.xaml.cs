@@ -19,13 +19,10 @@ namespace RememberTheWords
 	{
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private ContextMenu contextMenu;
+		public Dictionary<string, string> settings;
 		public MainWindow()
 		{
-			InitializeComponent();
-
-			RegistryManager registryManager = new RegistryManager();
-			registryManager.GetInfo();
-
+			InitializeComponent();				
 			ButtonAddWord.IsEnabled = false;
 			ButtonAddWord.Click += BtnAddWord_Click;
 			TextBoxTranslate.TextChanged += TbTranslate_TextChanged;
@@ -40,6 +37,8 @@ namespace RememberTheWords
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
 			Hide();
 
+			RegistryManager registryManager = new RegistryManager();
+			settings = registryManager.GetSetings();
 			//notifyIcon
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			notifyIcon.Visible = true;
@@ -57,10 +56,10 @@ namespace RememberTheWords
 		private void ButtonSettings_Click(object sender, RoutedEventArgs e)
 		{
 			Hide();
-			Settings settings = new Settings();
-			settings.Top = System.Windows.SystemParameters.WorkArea.Height - settings.Height;
-			settings.Left = System.Windows.SystemParameters.WorkArea.Width - settings.Width;
-			settings.ShowDialog();
+			Settings wnd = new Settings();
+			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
+			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
+			wnd.ShowDialog(ref settings);
 			Show();
 		}
 
