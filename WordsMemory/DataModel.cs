@@ -1,4 +1,4 @@
-namespace WordsMemory
+namespace RememberTheWords
 {
 	using System;
 	using System.Data.Entity;

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WordsMemory
+namespace RememberTheWords
 {	
 	public partial class MainWindow : Window
 	{
@@ -22,6 +22,10 @@ namespace WordsMemory
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			RegistryManager registryManager = new RegistryManager();
+			registryManager.GetInfo();
+
 			ButtonAddWord.IsEnabled = false;
 			ButtonAddWord.Click += BtnAddWord_Click;
 			TextBoxTranslate.TextChanged += TbTranslate_TextChanged;
