@@ -22,6 +22,12 @@ namespace WordsMemory
 		public Settings()
 		{
 			InitializeComponent();
+			ButtonCancel.Click += ButtonCancel_Click;
+		}
+
+		private void ButtonCancel_Click(object sender, RoutedEventArgs e)
+		{
+			DialogResult = false;
 		}
 	}
 }

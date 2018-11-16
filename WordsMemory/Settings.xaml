@@ -12,7 +12,7 @@
         TextElement.FontSize="14"
 		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
 		Title="Settings" Height="400" Width="300" MinHeight="400" MinWidth="300"
-		ResizeMode="NoResize" FocusManager.FocusedElement="{x:Reference Name=TextBoxWord}" Icon="icon1.png">
+		ResizeMode="NoResize" Icon="icon1.png">
     <Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
@@ -64,8 +64,8 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button Width="100" Grid.Column="0">Cancel</Button>
-			<Button Width="100"  Grid.Column="1">Ok</Button>
+			<Button x:Name="ButtonCancel" Width="100" Grid.Column="0">Cancel</Button>
+			<Button x:Name="ButtonOk" Width="100"  Grid.Column="1">Ok</Button>
 		</Grid>
 		
 	</Grid>

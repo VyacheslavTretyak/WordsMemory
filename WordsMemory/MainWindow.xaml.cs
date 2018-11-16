@@ -27,6 +27,7 @@ namespace WordsMemory
 			TextBoxTranslate.TextChanged += TbTranslate_TextChanged;
 			TextBoxWord.TextChanged += TbTranslate_TextChanged;
 			ButtonShow.Click += ButtonShow_Click;
+			ButtonSettings.Click += ButtonSettings_Click;
 			Closing += MainWindow_Closing;
 			Closed += MainWindow_Closed;
 			ButtonExit.Click += ButtonExit_Click;
@@ -47,6 +48,16 @@ namespace WordsMemory
 			item.Click += ButtonExit_Click;
 			item.Header = "Exit";
 			contextMenu.Items.Add(item);
+		}
+
+		private void ButtonSettings_Click(object sender, RoutedEventArgs e)
+		{
+			Hide();
+			Settings settings = new Settings();
+			settings.Top = System.Windows.SystemParameters.WorkArea.Height - settings.Height;
+			settings.Left = System.Windows.SystemParameters.WorkArea.Width - settings.Width;
+			settings.ShowDialog();
+			Show();
 		}
 
 		private void NotifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
