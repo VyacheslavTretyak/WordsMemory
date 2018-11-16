@@ -11,7 +11,7 @@
 		TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
 		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-		Title="Words Memory" Height="400" Width="500"
+		Title="Words Memory" Height="400" Width="500" MinHeight="400" MinWidth="500"
 		ResizeMode="NoResize" FocusManager.FocusedElement="{x:Reference Name=TextBoxWord}" Icon="icon1.png">
 	<Window.Resources>
 		
