@@ -28,5 +28,16 @@ namespace WordsMemory
 		{
 
 		}
+
+		private void Card_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			Close();
+		}
+
+		private void BackCard_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			CommandBinding command = new CommandBinding(MaterialDesignThemes.Wpf.Flipper.FlipCommand);
+			command.Command.Execute(sender);
+		}
 	}
 }

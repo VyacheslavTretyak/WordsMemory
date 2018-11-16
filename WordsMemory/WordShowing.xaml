@@ -10,12 +10,11 @@
 		TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
 		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        Title="Word Showing" Height="100" Width="200"
-		AllowsTransparency="true" WindowStyle="None">
+        Title="Word Showing"  Width="320" Height="200"
+		AllowsTransparency="True" WindowStyle="None" Topmost="True">
 	<Window.Background>
-		<SolidColorBrush Opacity="0.1" Color="White"/>
-	</Window.Background>	
-
+		<SolidColorBrush Opacity="0.0" Color="White"/>
+	</Window.Background>
 	<Grid>
 		<Grid.Resources>
 			<ResourceDictionary>
@@ -26,14 +25,28 @@
 		</Grid.Resources>
 		<materialDesign:Flipper Style="{StaticResource MaterialDesignCardFlipper}" IsFlippedChanged="Flipper_IsFlippedChanged">
 			<materialDesign:Flipper.FrontContent>
-				<Button Width="200" Height="100" Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}">
-					WORD
-				</Button>
+				<materialDesign:Card MouseUp="Card_MouseUp"
+					Background="{DynamicResource PrimaryHueLightBrush}"
+					Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+					Width="300" Height="180">
+					<StackPanel Orientation="Vertical">
+						<Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" 
+							Command="{x:Static materialDesign:Flipper.FlipCommand}"
+						Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+							HorizontalAlignment="Right" Margin="8">
+							<materialDesign:PackIcon Kind="Help" Height="14" Width="14" />
+						</Button>
+						<TextBlock Margin="20" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Word</TextBlock>
+					</StackPanel>
+				</materialDesign:Card>
 			</materialDesign:Flipper.FrontContent>
 			<materialDesign:Flipper.BackContent>
-				<Button Width="200" Height="100" Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}">
-					Translate
-				</Button>
+				<materialDesign:Card MouseUp="BackCard_MouseUp"
+					Background="{DynamicResource PrimaryHueDarkBrush}"
+					Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"
+					Width="300" Height="180">
+					<TextBlock FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">Translate</TextBlock>
+				</materialDesign:Card>
 			</materialDesign:Flipper.BackContent>
 		</materialDesign:Flipper>
 	</Grid>

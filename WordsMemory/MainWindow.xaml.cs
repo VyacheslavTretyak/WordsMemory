@@ -14,12 +14,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace WordsMemory
-{
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
+{	
 	public partial class MainWindow : Window
 	{
+		private System.Windows.Forms.NotifyIcon notifyIcon;
+		private ContextMenu contextMenu;
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -27,15 +26,72 @@ namespace WordsMemory
 			ButtonAddWord.Click += BtnAddWord_Click;
 			TextBoxTranslate.TextChanged += TbTranslate_TextChanged;
 			TextBoxWord.TextChanged += TbTranslate_TextChanged;
-			ButtonLogin.Click += ButtonSettings_Click;
+			ButtonShow.Click += ButtonShow_Click;
+			Closing += MainWindow_Closing;
+			Closed += MainWindow_Closed;
+			ButtonExit.Click += ButtonExit_Click;
+
+			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
+			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
+			Hide();
+
+			//notifyIcon
+			notifyIcon = new System.Windows.Forms.NotifyIcon();
+			notifyIcon.Visible = true;
+			var icon = Properties.Resources.icon1.GetHicon();
+			notifyIcon.Icon = System.Drawing.Icon.FromHandle(icon);			
+			notifyIcon.MouseClick += NotifyIcon_MouseClick;
+			//contextMenu
+			contextMenu = new ContextMenu();
+			MenuItem item = new MenuItem();
+			item.Click += ButtonExit_Click;
+			item.Header = "Exit";
+			contextMenu.Items.Add(item);
 		}
 
-		private void ButtonSettings_Click(object sender, RoutedEventArgs e)
+		private void NotifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			
-			WordShowing showing = new WordShowing();
-			showing.ShowDialog();
+			if (e.Button == System.Windows.Forms.MouseButtons.Right)
+			{				
+				contextMenu.IsOpen = true;
+			}
+			else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+			{
+				if (IsVisible)
+				{
+					Activate();
+				}
+				else
+				{
+					Show();
+					WindowState = WindowState.Normal;
+				}
+			}
 		}
+
+	
+		private void ButtonExit_Click(object sender, RoutedEventArgs e)
+		{
+			App.Current.Shutdown();
+		}
+
+		private void MainWindow_Closed(object sender, EventArgs e)
+		{
+			notifyIcon?.Dispose();
+		}
+		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			e.Cancel = true;
+			Hide();			
+		}
+
+		private void ButtonShow_Click(object sender, RoutedEventArgs e)
+		{
+			WordShowing showing = new WordShowing();
+			showing.Top = System.Windows.SystemParameters.WorkArea.Height - showing.Height;
+			showing.Left = System.Windows.SystemParameters.WorkArea.Width - showing.Width;
+			showing.ShowDialog();
+		}		
 
 		private void TbTranslate_TextChanged(object sender, TextChangedEventArgs e)
 		{
@@ -43,8 +99,7 @@ namespace WordsMemory
 		}
 
 		private void BtnAddWord_Click(object sender, RoutedEventArgs e)
-		{
-			
+		{			
 			DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
 			TextBoxWord.Text = "";
 			TextBoxTranslate.Text = "";
