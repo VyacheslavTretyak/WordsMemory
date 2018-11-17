@@ -1,8 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+
 namespace RememberTheWords
-{
-	using System;
-	using System.Data.Entity;
-	using System.Linq;
+{	
 	public class WordSet
 	{
 		public int Id { get; set; }
@@ -20,7 +22,15 @@ namespace RememberTheWords
 		}	
 
 		public virtual DbSet<WordSet> WordSets{ get; set; }
-
+		public static List<WordSet> GetList()
+		{
+			List<WordSet> wordsList = new List<WordSet>();
+			using (DataModel db = new DataModel())
+			{
+				wordsList = db.WordSets.ToList<WordSet>();
+			}
+			return wordsList;
+		}
 		public static void Add(string word, string translate)
 		{
 			WordSet wordSet = new WordSet()

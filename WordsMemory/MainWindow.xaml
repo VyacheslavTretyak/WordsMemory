@@ -24,17 +24,17 @@
 			<RowDefinition/>
 		</Grid.RowDefinitions>
 		<materialDesign:PopupBox HorizontalAlignment="Right" StaysOpen="True" IsEnabled="{Binding IsChecked, ElementName=PopupEnabled}">
-			<Grid Width="200" Margin="8,8,8,8">								
-				<Grid.RowDefinitions>
-					<RowDefinition Height="*" />
+			<Grid Width="200" Margin="8,8,8,8">					<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
 					<RowDefinition Height="*" />
 					<RowDefinition Height="*" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<Button x:Name="ButtonSettings" Grid.Row="0" Style="{StaticResource MaterialDesignFlatButton}">SETTINGS</Button>
+				<Button x:Name="ButtonList" Grid.Row="0" Style="{StaticResource MaterialDesignFlatButton}">LIST</Button>
 				<Button x:Name="ButtonShow" Grid.Row="1" Style="{StaticResource MaterialDesignFlatButton}">SHOW</Button>
-				<Button Name="ButtonExit" Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}">EXIT</Button>
+				<Button x:Name="ButtonSettings" Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}">SETTINGS</Button>
+				
+				<Button Name="ButtonExit" Grid.Row="3" Style="{StaticResource MaterialDesignFlatButton}">EXIT</Button>
 			</Grid>
 		</materialDesign:PopupBox>
 		<TextBox x:Name="TextBoxWord" Grid.Row="1" materialDesign:HintAssist.Hint="word" Margin="20"/>

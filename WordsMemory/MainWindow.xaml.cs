@@ -28,10 +28,11 @@ namespace RememberTheWords
 			TextBoxTranslate.TextChanged += TbTranslate_TextChanged;
 			TextBoxWord.TextChanged += TbTranslate_TextChanged;
 			ButtonShow.Click += ButtonShow_Click;
+			ButtonList.Click += ButtonList_Click;
 			ButtonSettings.Click += ButtonSettings_Click;
 			Closing += MainWindow_Closing;
 			Closed += MainWindow_Closed;
-			ButtonExit.Click += ButtonExit_Click;
+			ButtonExit.Click += ButtonExit_Click;	
 
 			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
@@ -51,6 +52,16 @@ namespace RememberTheWords
 			item.Click += ButtonExit_Click;
 			item.Header = "Exit";
 			contextMenu.Items.Add(item);
+		}
+
+		private void ButtonList_Click(object sender, RoutedEventArgs e)
+		{
+			Hide();
+			Words wnd = new Words();
+			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
+			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
+			wnd.ShowDialog();
+			Show();
 		}
 
 		private void ButtonSettings_Click(object sender, RoutedEventArgs e)
@@ -113,11 +124,10 @@ namespace RememberTheWords
 		}
 
 		private void BtnAddWord_Click(object sender, RoutedEventArgs e)
-		{			
+		{
 			DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
 			TextBoxWord.Text = "";
 			TextBoxTranslate.Text = "";
 		}
-		
 	}
 }
