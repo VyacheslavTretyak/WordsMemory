@@ -31,6 +31,18 @@ namespace RememberTheWords
 			}
 			return wordsList;
 		}
+		public static void DeleteRow(string word, string translate)
+		{
+			using (DataModel db = new DataModel())
+			{
+				var row = db.WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+				if(row != null)
+				{
+					db.WordSets.Remove(row);
+					db.SaveChanges();
+				}
+			}
+		}
 		public static void Add(string word, string translate)
 		{
 			WordSet wordSet = new WordSet()

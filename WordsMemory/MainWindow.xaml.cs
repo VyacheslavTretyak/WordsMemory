@@ -37,9 +37,13 @@ namespace RememberTheWords
 			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
 			Hide();
-
+			//load settings
 			RegistryManager registryManager = new RegistryManager();
 			settings = registryManager.GetSetings();
+			if (settings["autoRun"].ToLower() == "true")
+			{
+				registryManager.AutoRunSet();
+			}			
 			//notifyIcon
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			notifyIcon.Visible = true;

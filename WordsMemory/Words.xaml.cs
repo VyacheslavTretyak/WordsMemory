@@ -19,8 +19,8 @@ namespace RememberTheWords
 		public List<WordSet> wordsList;
 		public Words()
 		{
-			InitializeComponent();			
-			Task.Run(() => GetList());
+			InitializeComponent();
+			GetList();
 			ContextMenu contextMenu = new ContextMenu();
 			MenuItem item = new MenuItem();
 			item.Click += Item_Click;
@@ -31,17 +31,24 @@ namespace RememberTheWords
 
 		private void Item_Click(object sender, RoutedEventArgs e)
 		{
-			var item = DataGridWords.SelectedItem;
-			//TODO delete item
+			var item = DataGridWords.SelectedItem;			
+			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
+			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
+			Task.Run(() => DataModel.DeleteRow(word, translate ));
+			GetList();
 		}
 
 		private void GetList()
 		{
-			var list = DataModel.GetList();
-			Dispatcher.Invoke(() =>				
+			DataGridWords.ItemsSource = null;
+			Task.Run(() =>
 			{
-				DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow });
-			});				
+				var list = DataModel.GetList();
+				Dispatcher.Invoke(() =>
+				{
+					DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow });
+				});
+			});
 		}
 	}
 }

@@ -18,18 +18,8 @@
 			  Margin="0 8 0 0"
 			  Name="DataGridWords"
 			  CanUserSortColumns="True"
-			  CanUserAddRows="False"
+			  CanUserAddRows="False"		
 			  materialDesign:DataGridAssist.CellPadding="4 2 2 2"
-			  materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2" />
-		
-		<!--<ListView Name="ListViewWords">
-			<ListView.View>
-				<GridView>
-					<GridViewColumn DisplayMemberBinding="{Binding Word}" Header="Word" />
-					<GridViewColumn DisplayMemberBinding="{Binding Translate}" Header="Translate" />
-					<GridViewColumn DisplayMemberBinding="{Binding CountShow}" Header="Count show" />
-				</GridView>
-			</ListView.View>
-		</ListView>-->
+			  materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2"/>
 	</Grid>
 </Window>

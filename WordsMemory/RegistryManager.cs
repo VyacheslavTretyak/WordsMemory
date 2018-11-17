@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,44 +26,69 @@ namespace RememberTheWords
 				new KeyValuePair<string, string>("days", "7"),
 				new KeyValuePair<string, string>("weeks", "4"),
 				new KeyValuePair<string, string>("ask", AskWords.Both.ToString()),
+				new KeyValuePair<string, string>("autoRun", "true"),
 			};
 		}
 		public void SaveSettings(Dictionary<string, string> parametrs)
 		{
-			RegistryKey key = Registry.CurrentUser;
-			RegistryKey appKey = key.OpenSubKey(AppName, true);
+			RegistryKey curUserkey = Registry.CurrentUser;
+			RegistryKey appKey = curUserkey.OpenSubKey(AppName, true);
 			foreach (var item in parametrs)
 			{
 				appKey.SetValue(item.Key, item.Value);
 			}
 			appKey.Close();
-			key.Close();
+			if (parametrs["autoRun"].ToLower() == "true")
+			{
+				AutoRunSet();
+			}
+			else
+			{
+				AutoRunUnset();
+			}
+			curUserkey.Close();
+		}
+		public void AutoRunSet()
+		{
+			RegistryKey curUserkey = Registry.CurrentUser;
+			RegistryKey autoRunKey = curUserkey.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+			var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+			autoRunKey.SetValue(AppName, location);
+			autoRunKey.Close();
+			curUserkey.Close();
+		}
+		public void AutoRunUnset()
+		{
+			RegistryKey curUserkey = Registry.CurrentUser;
+			RegistryKey autoRunKey = curUserkey.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+			autoRunKey.DeleteValue(AppName);
+			autoRunKey.Close();
+			curUserkey.Close();
 		}
 		public Dictionary<string, string> GetSetings()
 		{
-			RegistryKey key = Registry.CurrentUser;
-			RegistryKey appKey = key.OpenSubKey(AppName);
+			RegistryKey curUserKey = Registry.CurrentUser;
+			RegistryKey appKey = curUserKey.OpenSubKey(AppName,true);
 			if (appKey == null)
-			{
-				appKey = CreateDefaultData(key);
+			{			
+				appKey = curUserKey.CreateSubKey(AppName, true);
 			}
 			Dictionary<string, string> pairs = new Dictionary<string, string>();
 			foreach (var item in defaultParams)
 			{
-				pairs[item.Key] = appKey.GetValue(item.Key).ToString();
+				var value = appKey.GetValue(item.Key);
+				if(value == null)
+				{
+					appKey.SetValue(item.Key, item.Value);
+				}
+				else
+				{
+					pairs[item.Key] = value.ToString();
+				}				
 			}
 			appKey.Close();
-			key.Close();
+			curUserKey.Close();
 			return pairs;
-		}
-		private RegistryKey CreateDefaultData(RegistryKey appKey)
-		{
-			RegistryKey key = appKey.CreateSubKey(AppName);
-			foreach (var item in defaultParams)
-			{
-				key.SetValue(item.Key, item.Value);
-			}
-			return key;
-		}
+		}		
 	}
 }

@@ -39,6 +39,7 @@ namespace RememberTheWords
 			TextBoxHours.Text = pairs["hours"];
 			TextBoxWeeks.Text = pairs["weeks"];
 			ComboBoxAsk.SelectedValue = pairs["ask"];
+			ToggleButtonAutoRun.IsChecked = pairs["autoRun"].ToLower() == "true";
 			bool res = ShowDialog()??false;
 			if (res)
 			{
@@ -46,7 +47,8 @@ namespace RememberTheWords
 				pairs["hours"] = TextBoxHours.Text;
 				pairs["weeks"] = TextBoxWeeks.Text;
 				pairs["ask"] = ComboBoxAsk.SelectedValue.ToString();
-				RegistryManager registryManager = new RegistryManager();
+				pairs["autoRun"] = ToggleButtonAutoRun.IsChecked.ToString();
+			   RegistryManager registryManager = new RegistryManager();
 				registryManager.SaveSettings(pairs);
 			}			
 			return res;
