@@ -46,7 +46,7 @@ namespace RememberTheWords
 				var list = DataModel.GetList();
 				Dispatcher.Invoke(() =>
 				{
-					DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow });
+					DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow, a.TimeShow, a.TimeCreate });
 				});
 			});
 		}

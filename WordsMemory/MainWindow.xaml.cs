@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +18,13 @@ namespace RememberTheWords
 {	
 	public partial class MainWindow : Window
 	{
+		//TODO BackUP
+		//TODO About
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private ContextMenu contextMenu;
 		public Dictionary<string, string> settings;
+		private Task tast;
+		private Thread thread;
 		public MainWindow()
 		{
 			InitializeComponent();				
@@ -53,9 +58,74 @@ namespace RememberTheWords
 			//contextMenu
 			contextMenu = new ContextMenu();
 			MenuItem item = new MenuItem();
-			item.Click += ButtonExit_Click;
-			item.Header = "Exit";
+			item.Click += ButtonShow_Click;
+			item.Header = "NEXT WORD";
 			contextMenu.Items.Add(item);
+			item = new MenuItem();
+			item.Click += ButtonList_Click;
+			item.Header = "LIST";
+			contextMenu.Items.Add(item);
+			item = new MenuItem();
+			item.Click += ButtonSettings_Click;
+			item.Header = "SETTINGS";
+			contextMenu.Items.Add(item);
+			item = new MenuItem();
+			item.Click += ButtonExit_Click;
+			item.Header = "EXIT";
+			contextMenu.Items.Add(item);
+			//Start
+			tast = Task.Run(() => NextWord());
+		}
+
+		private void NextWord()
+		{
+			thread = Thread.CurrentThread;
+			while (true)
+			{
+				NextWord word = DataModel.NextWord(settings);
+				if(word == null)
+				{
+					MessageBox.Show("No more words");
+					return;
+				}
+				if(word.WaitSeconds != 0)
+				{
+					Thread.Sleep((int)word.WaitSeconds * 1000);
+				}
+				Dispatcher.Invoke(() =>
+				{
+					WordShow(word);
+				});
+			}
+			
+		}
+		private void WordShow(NextWord word)
+		{
+			WordShowing wnd = new WordShowing();
+			bool flag = false;
+			if (settings["ask"] == AskWords.Word.ToString())
+			{
+				flag = true;
+			}
+			else if (settings["ask"] == AskWords.Both.ToString())
+			{
+				Random rnd = new Random();
+				flag = rnd.Next(0, 2) == 1;
+			}
+			if (flag)
+			{
+				wnd.TextBlockWord.Text = word.WordSet.Word;
+				wnd.TextBlockTranslate.Text = word.WordSet.Translate;
+			}
+			else
+			{
+				wnd.TextBlockWord.Text = word.WordSet.Translate;
+				wnd.TextBlockTranslate.Text = word.WordSet.Word;
+			}
+			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
+			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
+			wnd.ShowDialog();
+			DataModel.UpdateWord(word.WordSet);
 		}
 
 		private void ButtonList_Click(object sender, RoutedEventArgs e)
@@ -116,10 +186,10 @@ namespace RememberTheWords
 
 		private void ButtonShow_Click(object sender, RoutedEventArgs e)
 		{
-			WordShowing showing = new WordShowing();
-			showing.Top = System.Windows.SystemParameters.WorkArea.Height - showing.Height;
-			showing.Left = System.Windows.SystemParameters.WorkArea.Width - showing.Width;
-			showing.ShowDialog();
+			thread.Abort();
+			NextWord word = DataModel.NextWord(settings);
+			WordShow(word);
+			tast = Task.Run(() => NextWord());
 		}		
 
 		private void TbTranslate_TextChanged(object sender, TextChangedEventArgs e)
@@ -129,9 +199,14 @@ namespace RememberTheWords
 
 		private void BtnAddWord_Click(object sender, RoutedEventArgs e)
 		{
-			DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
+			thread.Abort();
+			NextWord word = new NextWord();
+			word.WordSet = DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
+			word.WaitSeconds = 0;
 			TextBoxWord.Text = "";
 			TextBoxTranslate.Text = "";
+			WordShow(word);
+			tast = Task.Run(() => NextWord());
 		}
 	}
 }
