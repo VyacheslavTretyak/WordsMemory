@@ -183,6 +183,7 @@ namespace RememberTheWords
 
 		private void MainWindow_Closed(object sender, EventArgs e)
 		{
+			BackUp.BackUpDB();
 			notifyIcon?.Dispose();
 		}
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
