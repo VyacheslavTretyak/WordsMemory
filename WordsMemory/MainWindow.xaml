@@ -29,11 +29,13 @@
 					<RowDefinition Height="*" />
 					<RowDefinition Height="*" />
 					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
 				<Button x:Name="ButtonList" Grid.Row="1" Style="{StaticResource MaterialDesignFlatButton}">LIST</Button>
 				<Button x:Name="ButtonShow" Grid.Row="0" Style="{StaticResource MaterialDesignFlatButton}">NEXT WORD</Button>
-				<Button x:Name="ButtonSettings" Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}">SETTINGS</Button>
-				<Button Name="ButtonExit" Grid.Row="3" Style="{StaticResource MaterialDesignFlatButton}">EXIT</Button>
+				<Button x:Name="ButtonRollback" Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}">ROLLBACK</Button>
+				<Button x:Name="ButtonSettings" Grid.Row="3" Style="{StaticResource MaterialDesignFlatButton}">SETTINGS</Button>
+				<Button Name="ButtonExit" Grid.Row="4" Style="{StaticResource MaterialDesignFlatButton}">EXIT</Button>
 			</Grid>
 		</materialDesign:PopupBox>
 		<TextBox x:Name="TextBoxWord" Grid.Row="1" materialDesign:HintAssist.Hint="word" Margin="20"/>

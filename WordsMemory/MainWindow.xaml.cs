@@ -38,6 +38,7 @@ namespace RememberTheWords
 			ButtonShow.Click += ButtonShow_Click;
 			ButtonList.Click += ButtonList_Click;
 			ButtonSettings.Click += ButtonSettings_Click;
+			ButtonRollback.Click += ButtonRollback_Click;
 			Closing += MainWindow_Closing;
 			Closed += MainWindow_Closed;
 			ButtonExit.Click += ButtonExit_Click;	
@@ -81,6 +82,11 @@ namespace RememberTheWords
 			contextMenu.Items.Add(item);
 			//Start
 			tast = Task.Run(() => NextWord());
+		}
+
+		private void ButtonRollback_Click(object sender, RoutedEventArgs e)
+		{
+			BackUp.RollBackDB();
 		}
 
 		private void NextWord()
