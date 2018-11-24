@@ -92,6 +92,22 @@ namespace RememberTheWords
 			}
 			return wordSet;
 		}
+		public static WordSet Edit(string word, string translate, string oldWord, string oldTranslate)
+		{
+			WordSet wordSet = null; 
+			using (DataModel db = new DataModel())
+			{
+				wordSet = db.WordSets.FirstOrDefault(a => a.Word == oldWord && a.Translate == oldTranslate);
+				if (wordSet != null)
+				{
+					wordSet.Word = word;
+					wordSet.Translate = translate;
+					db.SaveChanges();
+				}
+			}
+			return wordSet;
+		}
+
 		public static void UpdateWord(WordSet wordSet)
 		{
 			using (DataModel db = new DataModel())

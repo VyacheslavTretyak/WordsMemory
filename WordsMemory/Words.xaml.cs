@@ -22,7 +22,7 @@ namespace RememberTheWords
 		{
 			InitializeComponent();
 			GetList();
-			ContextMenu contextMenu = new ContextMenu();
+			ContextMenu contextMenu = new ContextMenu();			
 			MenuItem item = new MenuItem();
 			item.Click += ItemShow_Click; ;
 			item.Header = "SHOW";
@@ -54,11 +54,20 @@ namespace RememberTheWords
 		
 			NextWord nextWord = Task<NextWord>.Run(() => DataModel.GetWord(word, translate)).Result;
 			ParentWindow.WordShow(nextWord);
+			GetList();
 		}
 
 		private void ItemEdit_Click(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			var item = DataGridWords.SelectedItem;
+			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
+			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
+			ParentWindow.TextBoxWord.Text = word;
+			ParentWindow.TextBoxTranslate.Text = translate;
+			ParentWindow.IsEdit = true;
+			ParentWindow.OldWord = word;
+			ParentWindow.OldTranslate = translate;
+			Close();
 		}
 
 		private void ItemReset_Click(object sender, RoutedEventArgs e)

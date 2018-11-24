@@ -25,6 +25,9 @@ namespace RememberTheWords
 		public Dictionary<string, string> settings;
 		private Task tast;
 		private Thread thread;
+		public bool IsEdit { get; set; } = false;
+		public string OldWord { get; set; }
+		public string OldTranslate { get; set; }
 		public MainWindow()
 		{
 			InitializeComponent();				
@@ -205,11 +208,19 @@ namespace RememberTheWords
 		{
 			thread.Abort();
 			NextWord word = new NextWord();
-			word.WordSet = DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
-			word.WaitSeconds = 0;
-			TextBoxWord.Text = "";
-			TextBoxTranslate.Text = "";
+			if (IsEdit)
+			{
+				word.WordSet = DataModel.Edit(TextBoxWord.Text, TextBoxTranslate.Text, OldWord, OldTranslate);
+				word.WaitSeconds = 0;
+			}
+			else
+			{
+				word.WordSet = DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
+				word.WaitSeconds = 0;				
+			}
 			WordShow(word);
+			TextBoxWord.Text = "";
+			TextBoxTranslate.Text = "";			
 			tast = Task.Run(() => NextWord());
 		}
 	}
