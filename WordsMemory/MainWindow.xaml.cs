@@ -173,9 +173,7 @@ namespace RememberTheWords
 					WindowState = WindowState.Normal;
 				}
 			}
-		}
-
-	
+		}	
 		private void ButtonExit_Click(object sender, RoutedEventArgs e)
 		{
 			App.Current.Shutdown();
