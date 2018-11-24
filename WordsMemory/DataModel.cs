@@ -37,6 +37,32 @@ namespace RememberTheWords
 			}
 			return wordsList;
 		}
+		public static void CountReset(string word, string translate)
+		{
+			using (DataModel db = new DataModel())
+			{
+				var row = db.WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+				if (row != null)
+				{
+					row.CountShow = 0;
+					db.SaveChanges();
+				}
+			}
+		}
+		public static NextWord GetWord(string word, string translate)
+		{
+			NextWord showWord = null;
+			using (DataModel db = new DataModel())
+			{
+				var row = db.WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+				if (row != null)
+				{
+					showWord = new NextWord();
+					showWord.WordSet = row;					
+				}
+			}
+			return showWord;
+		}
 		public static void DeleteRow(string word, string translate)
 		{
 			using (DataModel db = new DataModel())

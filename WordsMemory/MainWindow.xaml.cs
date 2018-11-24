@@ -61,14 +61,17 @@ namespace RememberTheWords
 			item.Click += ButtonShow_Click;
 			item.Header = "NEXT WORD";
 			contextMenu.Items.Add(item);
+
 			item = new MenuItem();
 			item.Click += ButtonList_Click;
 			item.Header = "LIST";
 			contextMenu.Items.Add(item);
+
 			item = new MenuItem();
 			item.Click += ButtonSettings_Click;
 			item.Header = "SETTINGS";
 			contextMenu.Items.Add(item);
+
 			item = new MenuItem();
 			item.Click += ButtonExit_Click;
 			item.Header = "EXIT";
@@ -99,7 +102,7 @@ namespace RememberTheWords
 			}
 			
 		}
-		private void WordShow(NextWord word)
+		public void WordShow(NextWord word)
 		{
 			WordShowing wnd = new WordShowing();
 			bool flag = false;
@@ -132,6 +135,7 @@ namespace RememberTheWords
 		{
 			Hide();
 			Words wnd = new Words();
+			wnd.ParentWindow = this;
 			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
 			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
 			wnd.ShowDialog();

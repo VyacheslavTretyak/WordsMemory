@@ -11,7 +11,7 @@
         TextElement.FontSize="14"
 		FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         Title="Remember The Words"  Width="305.561" Height="182.353"
-		AllowsTransparency="True" WindowStyle="None" Topmost="True">
+		AllowsTransparency="True" WindowStyle="None" Topmost="True" Icon="icon1.png">
 	<Window.Background>
 		<SolidColorBrush Opacity="0.0" Color="White"/>
 	</Window.Background>

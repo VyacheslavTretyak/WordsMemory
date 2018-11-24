@@ -20,6 +20,7 @@
 			  CanUserSortColumns="True"
 			  CanUserAddRows="False"		
 			  materialDesign:DataGridAssist.CellPadding="4 2 2 2"
-			  materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2"/>
+			  materialDesign:DataGridAssist.ColumnHeaderPadding="4 2 2 2"
+			  ToolTip="Right click to context menu"/>		
 	</Grid>
 </Window>
