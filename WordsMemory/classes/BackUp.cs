@@ -10,10 +10,11 @@ namespace RememberTheWords
 {
 	public class BackUp
 	{
-		private static string directory = "backup";
-		private static string fileName = "rememberTheWord";
-		private static string format = "yyyy_MM_dd_HH_mm_ss";
-		private static string spliter = ";";
+		private string directory = "backup";
+		private string fileName = "rememberTheWord";
+		private string format = "yyyy_MM_dd_HH_mm_ss";
+		private string spliter = ";";
+		private string 
 		private static void TaskBackUpDB()
 		{
 			var list = DataModel.GetList();

@@ -28,6 +28,7 @@ namespace RememberTheWords
 		public bool IsEdit { get; set; } = false;
 		public string OldWord { get; set; }
 		public string OldTranslate { get; set; }
+		private DataManager dataManager;
 		public MainWindow()
 		{
 			InitializeComponent();				
@@ -46,6 +47,8 @@ namespace RememberTheWords
 			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
 			Hide();
+
+			dataManager = new DataManager();
 			//load settings
 			RegistryManager registryManager = new RegistryManager();
 			settings = registryManager.GetSetings();
@@ -56,7 +59,7 @@ namespace RememberTheWords
 			//notifyIcon
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			notifyIcon.Visible = true;
-			var icon = Properties.Resources.icon1.GetHicon();
+			var icon = WordsMemory.Properties.Resources.icon1.GetHicon();
 			notifyIcon.Icon = System.Drawing.Icon.FromHandle(icon);			
 			notifyIcon.MouseClick += NotifyIcon_MouseClick;
 			//contextMenu
@@ -94,7 +97,7 @@ namespace RememberTheWords
 			thread = Thread.CurrentThread;
 			while (true)
 			{
-				NextWord word = DataModel.NextWord(settings);
+				WordSet word = dataManager.NextWord(settings);
 				if(word == null)
 				{
 					MessageBox.Show("No more words");
@@ -111,7 +114,7 @@ namespace RememberTheWords
 			}
 			
 		}
-		public void WordShow(NextWord word)
+		public void WordShow(WordSet word)
 		{
 			WordShowing wnd = new WordShowing();
 			bool flag = false;
@@ -126,18 +129,18 @@ namespace RememberTheWords
 			}
 			if (flag)
 			{
-				wnd.TextBlockWord.Text = word.WordSet.Word;
-				wnd.TextBlockTranslate.Text = word.WordSet.Translate;
+				wnd.TextBlockWord.Text = word.Word;
+				wnd.TextBlockTranslate.Text = word.Translate;
 			}
 			else
 			{
-				wnd.TextBlockWord.Text = word.WordSet.Translate;
-				wnd.TextBlockTranslate.Text = word.WordSet.Word;
+				wnd.TextBlockWord.Text = word.Translate;
+				wnd.TextBlockTranslate.Text = word.Word;
 			}
 			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
 			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
 			wnd.ShowDialog();
-			DataModel.UpdateWord(word.WordSet);
+			dataManager.UpdateWord(word);
 		}
 
 		private void ButtonList_Click(object sender, RoutedEventArgs e)
@@ -199,7 +202,7 @@ namespace RememberTheWords
 		private void ButtonShow_Click(object sender, RoutedEventArgs e)
 		{
 			thread.Abort();
-			NextWord word = DataModel.NextWord(settings);
+			WordSet word = dataManager.NextWord(settings);
 			WordShow(word);
 			tast = Task.Run(() => NextWord());
 		}		
@@ -212,15 +215,15 @@ namespace RememberTheWords
 		private void BtnAddWord_Click(object sender, RoutedEventArgs e)
 		{
 			thread.Abort();
-			NextWord word = new NextWord();
+			WordSet word = new WordSet();
 			if (IsEdit)
 			{
-				word.WordSet = DataModel.Edit(TextBoxWord.Text, TextBoxTranslate.Text, OldWord, OldTranslate);
+				word = dataManager.Edit(TextBoxWord.Text, TextBoxTranslate.Text, OldWord, OldTranslate);
 				word.WaitSeconds = 0;
 			}
 			else
 			{
-				word.WordSet = DataModel.Add(TextBoxWord.Text, TextBoxTranslate.Text);
+				word = dataManager.Add(TextBoxWord.Text, TextBoxTranslate.Text);
 				word.WaitSeconds = 0;				
 			}
 			WordShow(word);

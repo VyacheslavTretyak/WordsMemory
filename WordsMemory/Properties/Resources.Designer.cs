@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RememberTheWords.Properties {
+namespace WordsMemory.Properties {
     using System;
     
     

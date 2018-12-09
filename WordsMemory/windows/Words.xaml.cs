@@ -18,9 +18,11 @@ namespace RememberTheWords
 	{
 		public List<WordSet> wordsList;
 		public MainWindow ParentWindow { get; set; }
+		private DataManager dataManager;
 		public Words()
 		{
 			InitializeComponent();
+			dataManager = new DataManager();
 			GetList();
 			ContextMenu contextMenu = new ContextMenu();			
 			MenuItem item = new MenuItem();
@@ -52,7 +54,7 @@ namespace RememberTheWords
 			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
 			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
 		
-			NextWord nextWord = Task<NextWord>.Run(() => DataModel.GetWord(word, translate)).Result;
+			WordSet nextWord = Task<WordSet>.Run(() => dataManager.GetWord(word, translate)).Result;
 			ParentWindow.WordShow(nextWord);
 			GetList();
 		}
@@ -75,7 +77,7 @@ namespace RememberTheWords
 			var item = DataGridWords.SelectedItem;
 			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
 			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
-			Task.Run(() => DataModel.CountReset(word, translate));
+			Task.Run(() => dataManager.CountReset(word, translate));
 			GetList();			
 		}
 
@@ -84,7 +86,7 @@ namespace RememberTheWords
 			var item = DataGridWords.SelectedItem;			
 			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
 			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
-			Task.Run(() => DataModel.DeleteRow(word, translate ));
+			Task.Run(() => dataManager.DeleteRow(word, translate ));
 			GetList();
 		}
 
@@ -93,7 +95,7 @@ namespace RememberTheWords
 			DataGridWords.ItemsSource = null;
 			Task.Run(() =>
 			{
-				var list = DataModel.GetList();
+				var list = dataManager.GetList();
 				Dispatcher.Invoke(() =>
 				{
 					DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow, a.TimeShow, a.TimeCreate });
