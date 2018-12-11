@@ -13,10 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace RememberTheWords
-{
-	/// <summary>
-	/// Interaction logic for WordShowing.xaml
-	/// </summary>
+{	
 	public partial class WordShowing : Window
 	{
 		public WordShowing()

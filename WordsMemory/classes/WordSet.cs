@@ -15,21 +15,20 @@ namespace RememberTheWords
 		public DateTime TimeShow { get; set; }
 		public int CountShow { get; set; }
 		public double WaitSeconds { get; set; }
+		public static string spliter = ";";
+		public static string formatInWord = "dd.MM.yyyy HH:mm:ss";
 		public string ToLine()
 		{
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(Id.ToString());
-			stringBuilder.Append(";");
+			StringBuilder stringBuilder = new StringBuilder();			
 			stringBuilder.Append(Word);
-			stringBuilder.Append(";");
+			stringBuilder.Append(spliter);
 			stringBuilder.Append(Translate);
-			stringBuilder.Append(";");
-			stringBuilder.Append(TimeCreate.ToString());
-			stringBuilder.Append(";");
-			stringBuilder.Append(TimeShow.ToString());
-			stringBuilder.Append(";");
+			stringBuilder.Append(spliter);		
 			stringBuilder.Append(CountShow.ToString());
-			stringBuilder.Append(";");
+			stringBuilder.Append(spliter);
+			stringBuilder.Append(TimeShow.ToString(formatInWord));
+			stringBuilder.Append(spliter);
+			stringBuilder.Append(TimeCreate.ToString(formatInWord));
 			return stringBuilder.ToString();
 		}
 	}

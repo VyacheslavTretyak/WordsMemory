@@ -17,20 +17,20 @@ using System.Windows.Shapes;
 namespace RememberTheWords
 {	
 	public partial class MainWindow : Window
-	{
-		//TODO BackUP
+	{		
 		//TODO About
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private ContextMenu contextMenu;
 		public Dictionary<string, string> settings;
-		private Task tast;
+		private Task task;
 		private Thread thread;
 		public bool IsEdit { get; set; } = false;
 		public string OldWord { get; set; }
 		public string OldTranslate { get; set; }
 		private DataManager dataManager;
+		private bool isClosed = false;
 		public MainWindow()
-		{
+		{			
 			InitializeComponent();				
 			ButtonAddWord.IsEnabled = false;
 			ButtonAddWord.Click += BtnAddWord_Click;
@@ -47,8 +47,15 @@ namespace RememberTheWords
 			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
 			Hide();
+			try
+			{
+				dataManager = DataManager.GetInstance();
+			}
+			catch(Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 
-			dataManager = new DataManager();
 			//load settings
 			RegistryManager registryManager = new RegistryManager();
 			settings = registryManager.GetSetings();
@@ -84,12 +91,14 @@ namespace RememberTheWords
 			item.Header = "EXIT";
 			contextMenu.Items.Add(item);
 			//Start
-			tast = Task.Run(() => NextWord());
+			task = Task.Run(() => NextWord());
 		}
 
 		private void ButtonRollback_Click(object sender, RoutedEventArgs e)
 		{
-			BackUp.RollBackDB();
+			thread.Abort();
+			dataManager.RollBack();
+			task = Task.Run(() => NextWord());
 		}
 
 		private void NextWord()
@@ -116,7 +125,7 @@ namespace RememberTheWords
 		}
 		public void WordShow(WordSet word)
 		{
-			WordShowing wnd = new WordShowing();
+			WordShowing wordShowingWindow = new WordShowing();
 			bool flag = false;
 			if (settings["ask"] == AskWords.Word.ToString())
 			{
@@ -129,39 +138,45 @@ namespace RememberTheWords
 			}
 			if (flag)
 			{
-				wnd.TextBlockWord.Text = word.Word;
-				wnd.TextBlockTranslate.Text = word.Translate;
+				wordShowingWindow.TextBlockWord.Text = word.Word;
+				wordShowingWindow.TextBlockTranslate.Text = word.Translate;
 			}
 			else
 			{
-				wnd.TextBlockWord.Text = word.Translate;
-				wnd.TextBlockTranslate.Text = word.Word;
+				wordShowingWindow.TextBlockWord.Text = word.Translate;
+				wordShowingWindow.TextBlockTranslate.Text = word.Word;
 			}
-			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
-			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
-			wnd.ShowDialog();
+			wordShowingWindow.Top = System.Windows.SystemParameters.WorkArea.Height - wordShowingWindow.Height;
+			wordShowingWindow.Left = System.Windows.SystemParameters.WorkArea.Width - wordShowingWindow.Width;
+			wordShowingWindow.ShowDialog();
 			dataManager.UpdateWord(word);
 		}
 
 		private void ButtonList_Click(object sender, RoutedEventArgs e)
 		{
 			Hide();
-			Words wnd = new Words();
-			wnd.ParentWindow = this;
-			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
-			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
-			wnd.ShowDialog();
-			Show();
+			Words wordsWindow = new Words();
+			wordsWindow.ParentWindow = this;
+			wordsWindow.Top = System.Windows.SystemParameters.WorkArea.Height - wordsWindow.Height;
+			wordsWindow.Left = System.Windows.SystemParameters.WorkArea.Width - wordsWindow.Width;
+			wordsWindow.ShowDialog();
+			if (!isClosed)
+			{
+				Show();
+			}
 		}
 
 		private void ButtonSettings_Click(object sender, RoutedEventArgs e)
 		{
 			Hide();
-			Settings wnd = new Settings();
-			wnd.Top = System.Windows.SystemParameters.WorkArea.Height - wnd.Height;
-			wnd.Left = System.Windows.SystemParameters.WorkArea.Width - wnd.Width;
-			wnd.ShowDialog(ref settings);
-			Show();
+			Settings settingsWindow = new Settings();
+			settingsWindow.Top = System.Windows.SystemParameters.WorkArea.Height - settingsWindow.Height;
+			settingsWindow.Left = System.Windows.SystemParameters.WorkArea.Width - settingsWindow.Width;
+			settingsWindow.ShowDialog(ref settings);
+			if (!isClosed)
+			{
+				Show();
+			}
 		}
 
 		private void NotifyIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -178,8 +193,11 @@ namespace RememberTheWords
 				}
 				else
 				{
-					Show();
-					WindowState = WindowState.Normal;
+					if (!isClosed)
+					{
+						Show();
+						WindowState = WindowState.Normal;
+					}
 				}
 			}
 		}	
@@ -190,7 +208,8 @@ namespace RememberTheWords
 
 		private void MainWindow_Closed(object sender, EventArgs e)
 		{
-			BackUp.BackUpDB();
+			isClosed = true;
+			dataManager.SaveChanges();
 			notifyIcon?.Dispose();
 		}
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -204,7 +223,7 @@ namespace RememberTheWords
 			thread.Abort();
 			WordSet word = dataManager.NextWord(settings);
 			WordShow(word);
-			tast = Task.Run(() => NextWord());
+			task = Task.Run(() => NextWord());
 		}		
 
 		private void TbTranslate_TextChanged(object sender, TextChangedEventArgs e)
@@ -229,7 +248,7 @@ namespace RememberTheWords
 			WordShow(word);
 			TextBoxWord.Text = "";
 			TextBoxTranslate.Text = "";			
-			tast = Task.Run(() => NextWord());
+			task = Task.Run(() => NextWord());
 		}
 	}
 }

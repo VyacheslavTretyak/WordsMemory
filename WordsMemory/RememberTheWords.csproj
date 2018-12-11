@@ -69,17 +69,17 @@
     <Compile Include="classes\BackUp.cs" />
     <Compile Include="classes\DataManager.cs" />
     <Compile Include="classes\RegistryManager.cs" />
-    <Compile Include="windows\Settings.xaml.cs">
+    <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="windows\Words.xaml.cs">
+    <Compile Include="Words.xaml.cs">
       <DependentUpon>Words.xaml</DependentUpon>
     </Compile>
     <Compile Include="classes\WordSet.cs" />
-    <Compile Include="windows\WordShowing.xaml.cs">
+    <Compile Include="WordShowing.xaml.cs">
       <DependentUpon>WordShowing.xaml</DependentUpon>
     </Compile>
-    <Page Include="windows\MainWindow.xaml">
+    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -88,19 +88,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="classes\DataModel.cs" />
-    <Compile Include="windows\MainWindow.xaml.cs">
+    <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="windows\Settings.xaml">
+    <Page Include="Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="windows\Words.xaml">
+    <Page Include="Words.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="windows\WordShowing.xaml">
+    <Page Include="WordShowing.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

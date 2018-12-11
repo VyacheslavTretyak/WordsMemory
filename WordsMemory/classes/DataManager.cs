@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,69 +11,180 @@ namespace RememberTheWords
 
 	public class DataManager
 	{
-		private string dataFile = "data/words.txt";
-		public string format = "yyyy_MM_dd_HH_mm_ss";
-		public List<WordSet> WordSets { get; set; }
-		private void SaveChanges()
+		private string directory = "data";
+		private string fileName = "words";
+		private string formatInFile = "yyyy_MM_dd_HH_mm_ss";
+		private string spliter = WordSet.spliter;
+		private string fullpath;
+		private List<WordSet> words;
+		private static DataManager instance = null;
+		public static DataManager GetInstance()
 		{
-			using(StreamWriter sw = new StreamWriter($"{dataFile}.tmp"))
+			if(instance == null)
 			{
-				foreach(var word in WordSets)
-				{
-					sw.WriteLine(word.ToLine());
-				}
+				instance = new DataManager();
+			}
+			return instance;
+		}
+		private DataManager()
+		{
+			fullpath = $"{directory}\\{fileName}.wrd";
+			LoadList();
+		}
+		public List<WordSet> GetWordsList()
+		{
+			return words;
+		}
+		public void RollBack()
+		{
+			System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+			DirectoryInfo info = new DirectoryInfo(directory);
+			fileDialog.InitialDirectory = info.FullName;
+			if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				Task.Run(() => RollBackTask(fileDialog.FileName));
 			}
 		}
-		public List<WordSet> GetList()
+		private void RollBackTask(string fileName)
 		{
-			List<WordSet> WordSets = new List<WordSet>();
-			using (StreamReader sr = new StreamReader(dataFile))
+			using (StreamReader streamReader = new StreamReader(fileName))
 			{
-				while (!sr.EndOfStream)
+				words.Clear();
+				while (!streamReader.EndOfStream)
 				{
-					string[] line = sr.ReadLine().Split(';');
-					WordSet word = new WordSet()
-					{
-						Id = int.Parse(line[0]),
-						Word = line[1],
-						Translate = line[2],
-						CountShow = int.Parse(line[3]),
-						TimeShow = DateTime.Parse(line[4], System.Globalization.CultureInfo.InvariantCulture),
-						TimeCreate = DateTime.Parse(line[5], System.Globalization.CultureInfo.InvariantCulture)
-					};
-					WordSets.Add(word);
+					string[] data = streamReader.ReadLine().Split(spliter[0]);					
+					WordSet wordSet = new WordSet();
+					wordSet.Word = data[0];
+					wordSet.Translate = data[1];					
+					wordSet.TimeShow = DateTime.Parse(data[3]);
+					wordSet.TimeCreate = DateTime.Parse(data[4]);
+					wordSet.CountShow = int.Parse(data[2]);
+					words.Add(wordSet);
+				}
+				SaveChanges();
+			}
+		}
+		public void SaveChanges()
+		{
+			Task.Run(() => SaveChangesTask());
+		}
+		private void SaveChangesTask()
+		{			
+			string time = DateTime.Now.ToString(formatInFile);
+			string fullpath = $"{directory}\\{fileName}__{time}.wrd";
+			FileInfo fi = new FileInfo(directory);			
+			using (StreamWriter streamWriter = new StreamWriter(fullpath))
+			{
+				foreach (var row in words)
+				{					
+					streamWriter.WriteLine(row.ToLine());
 				}
 			}
-			return WordSets;
+			DirectoryInfo info = new DirectoryInfo(fi.FullName);
+			FileInfo[] files = info.GetFiles();
+			while (files.Length > 5)
+			{
+				FileInfo latestFile = files[0];
+				int index = latestFile.Name.IndexOf("__");
+				string strTime = latestFile.Name.Substring(index + 2, 19);
+				DateTime latest = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+
+				foreach (FileInfo file in files)
+				{
+					index = file.Name.IndexOf("__");
+					strTime = file.Name.Substring(index + 2, 19);
+					DateTime dateTime = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+					if (dateTime < latest)
+					{
+						latestFile = file;
+						latest = dateTime;
+					}
+				}
+				if (File.Exists(latestFile.FullName))
+				{
+					File.Delete(latestFile.FullName);
+				}
+				files = info.GetFiles();
+			}
+		}
+		private void LoadList()
+		{
+			Task.Run(() =>
+			{
+				words = new List<WordSet>();
+				FileInfo fi = new FileInfo(directory);
+				if (!fi.Exists)
+				{
+					Directory.CreateDirectory(fi.FullName);
+				}
+				DirectoryInfo info = new DirectoryInfo(fi.FullName);
+				FileInfo[] files = info.GetFiles();
+				if(files.Length == 0)
+				{
+					throw new Exception("File not found!");
+				}
+				FileInfo newestFile = files[0];
+				int index = newestFile.Name.IndexOf("__");
+				string strTime = newestFile.Name.Substring(index + 2, 19);
+				DateTime newest = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+				foreach (FileInfo file in files)
+				{
+					index = file.Name.IndexOf("__");
+					strTime = file.Name.Substring(index + 2, 19);
+					DateTime dateTime = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+					if (dateTime > newest)
+					{
+						newestFile = file;
+						newest = dateTime;
+					}
+				}						
+				using (StreamReader sr = new StreamReader(newestFile.FullName))
+				{
+					while (!sr.EndOfStream)
+					{
+						string[] line = sr.ReadLine().Split(spliter.ToCharArray());
+						WordSet word = new WordSet()
+						{							
+							Word = line[0],
+							Translate = line[1],
+							CountShow = int.Parse(line[2]),
+							TimeShow = DateTime.ParseExact(line[3], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
+							TimeCreate = DateTime.ParseExact(line[4], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
+							
+						};
+						words.Add(word);
+					}
+				}
+			});
 		}
 		public void CountReset(string word, string translate)
-		{ 
-			var row = WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+		{
+			var row = words.FirstOrDefault(a => a.Word == word && a.Translate == translate);
 			if (row != null)
 			{
 				row.CountShow = 0;
 				SaveChanges();
 			}
-			
+
 		}
 		public WordSet GetWord(string word, string translate)
 		{
-			var wordSet = WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+			var wordSet = words.FirstOrDefault(a => a.Word == word && a.Translate == translate);
 			if (wordSet != null)
 			{
 				wordSet.WaitSeconds = 0;
 			}
 			return wordSet;
 		}
-		public  void DeleteRow(string word, string translate)
+		public void DeleteRow(string word, string translate)
 		{
-			var row = WordSets.FirstOrDefault(a => a.Word == word && a.Translate == translate);
+			var row = words.FirstOrDefault(a => a.Word == word && a.Translate == translate);
 			if (row != null)
 			{
-				WordSets.Remove(row);
+				words.Remove(row);
 				SaveChanges();
 			}
-			
+
 		}
 		public WordSet Add(string word, string translate)
 		{
@@ -84,146 +196,144 @@ namespace RememberTheWords
 				TimeShow = DateTime.Now,
 				CountShow = 0
 			};
-			WordSets.Add(wordSet);
+			words.Add(wordSet);
 			SaveChanges();
 			return wordSet;
 		}
 		public WordSet Edit(string word, string translate, string oldWord, string oldTranslate)
 		{
-			WordSet wordSet = WordSets.FirstOrDefault(a => a.Word == oldWord && a.Translate == oldTranslate);
+			WordSet wordSet = words.FirstOrDefault(a => a.Word == oldWord && a.Translate == oldTranslate);
 			if (wordSet != null)
 			{
 				wordSet.Word = word;
 				wordSet.Translate = translate;
-				SaveChanges();			
 			}
 			return wordSet;
 		}
-
 		public void UpdateWord(WordSet wordSet)
 		{
-			var word = WordSets.FirstOrDefault(a => a.Id == wordSet.Id);
+			var word = words.FirstOrDefault(a => a.Word == wordSet.Word);
 			word.CountShow++;
 			word.TimeShow = DateTime.Now;
-			SaveChanges();			
+			SaveChanges();
 		}
 		public WordSet NextWord(Dictionary<string, string> settings)
-		{			
-			WordSet nextWord = new WordSet();
+		{
+			WordSet nextWord = null;
 			DateTime now = DateTime.Now;
 			int to = int.Parse(settings["hours"]);
-				int from = 0;
-				var sets = WordSets.Where(a => a.CountShow <= to);
-				WordSet first = null;
-				foreach (var a in sets)
+			int from = 0;
+			var sets = words.Where(a => a.CountShow <= to);
+			WordSet first = null;
+			foreach (var a in sets)
+			{
+				if ((now - a.TimeShow).TotalMinutes > 60)
 				{
-					if ((now - a.TimeShow).TotalMinutes > 60)
-					{
-						first = a;
-						break;
-					}
+					first = a;
+					break;
 				}
-				var set = first;
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 0;
-					return nextWord;
-				}
-				from = int.Parse(settings["hours"]);
-				to = int.Parse(settings["days"]) + from;
-				sets = WordSets.Where(a => a.CountShow > from && a.CountShow <= to);
-				first = null;
-				foreach (var a in sets)
-				{
-					if ((now - a.TimeShow).TotalHours > 24)
-					{
-						first = a;
-						break;
-					}
-				}
-				set = first;
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 0;
-					return nextWord;
-				}
-				from = to;
-				to = int.Parse(settings["weeks"]) + from;
-
-				sets = WordSets.Where(a => a.CountShow > from && a.CountShow <= to);
-				first = null;
-				foreach (var a in sets)
-				{
-					if ((now - a.TimeShow).TotalDays > 7)
-					{
-						first = a;
-						break;
-					}
-				}
-				set = first;
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 0;
-					return nextWord;
-				}
-				from = to;
-				sets = WordSets.Where(a => a.CountShow > from);
-				first = null;
-				foreach (var a in sets)
-				{
-					if ((now - a.TimeShow).TotalDays > 30)
-					{
-						first = a;
-						break;
-					}
-				}
-				set = first;
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 0;
-					return nextWord;
-				}
-				to = int.Parse(settings["hours"]);
-				set = WordSets.Where(a => a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 60 * 60 - (now - set.TimeShow).TotalSeconds;
-					return nextWord;
-				}
-				from = to;
-				to = int.Parse(settings["days"]) + from;
-				set = WordSets.Where(a => a.CountShow > from && a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 60 * 60 * 24 - (now - set.TimeShow).TotalSeconds;
-					return nextWord;
-				}
-				from = to;
-				to = int.Parse(settings["weeks"]) + from;
-				set = WordSets.Where(a => a.CountShow > from && a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 60 * 60 * 24 * 7 - (now - set.TimeShow).TotalSeconds;
-					return nextWord;
-				}
-				from = to;
-				set = WordSets.Where(a => a.CountShow > from).OrderBy(a => a.TimeShow).FirstOrDefault();
-				if (set != null)
-				{
-					nextWord = set;
-					nextWord.WaitSeconds = 60 * 60 * 24 * 30 - (now - set.TimeShow).TotalSeconds;
-					return nextWord;
-				}
-				return null;
 			}
+			var set = first;
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 0;
+				return nextWord;
+			}
+			from = int.Parse(settings["hours"]);
+			to = int.Parse(settings["days"]) + from;
+			sets = words.Where(a => a.CountShow > from && a.CountShow <= to);
+			first = null;
+			foreach (var a in sets)
+			{
+				if ((now - a.TimeShow).TotalHours > 24)
+				{
+					first = a;
+					break;
+				}
+			}
+			set = first;
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 0;
+				return nextWord;
+			}
+			from = to;
+			to = int.Parse(settings["weeks"]) + from;
+
+			sets = words.Where(a => a.CountShow > from && a.CountShow <= to);
+			first = null;
+			foreach (var a in sets)
+			{
+				if ((now - a.TimeShow).TotalDays > 7)
+				{
+					first = a;
+					break;
+				}
+			}
+			set = first;
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 0;
+				return nextWord;
+			}
+			from = to;
+			sets = words.Where(a => a.CountShow > from);
+			first = null;
+			foreach (var a in sets)
+			{
+				if ((now - a.TimeShow).TotalDays > 30)
+				{
+					first = a;
+					break;
+				}
+			}
+			set = first;
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 0;
+				return nextWord;
+			}
+			to = int.Parse(settings["hours"]);
+			set = words.Where(a => a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 60 * 60 - (now - set.TimeShow).TotalSeconds;
+				return nextWord;
+			}
+			from = to;
+			to = int.Parse(settings["days"]) + from;
+			set = words.Where(a => a.CountShow > from && a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 60 * 60 * 24 - (now - set.TimeShow).TotalSeconds;
+				return nextWord;
+			}
+			from = to;
+			to = int.Parse(settings["weeks"]) + from;
+			set = words.Where(a => a.CountShow > from && a.CountShow <= to).OrderBy(a => a.TimeShow).FirstOrDefault();
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 60 * 60 * 24 * 7 - (now - set.TimeShow).TotalSeconds;
+				return nextWord;
+			}
+			from = to;
+			set = words.Where(a => a.CountShow > from).OrderBy(a => a.TimeShow).FirstOrDefault();
+			if (set != null)
+			{
+				nextWord = set;
+				nextWord.WaitSeconds = 60 * 60 * 24 * 30 - (now - set.TimeShow).TotalSeconds;
+				return nextWord;
+			}
+			return null;
 		}
 	}
 }
+
 

@@ -22,7 +22,7 @@ namespace RememberTheWords
 		public Words()
 		{
 			InitializeComponent();
-			dataManager = new DataManager();
+			dataManager = DataManager.GetInstance();
 			GetList();
 			ContextMenu contextMenu = new ContextMenu();			
 			MenuItem item = new MenuItem();
@@ -95,7 +95,7 @@ namespace RememberTheWords
 			DataGridWords.ItemsSource = null;
 			Task.Run(() =>
 			{
-				var list = dataManager.GetList();
+				var list = dataManager.GetWordsList();
 				Dispatcher.Invoke(() =>
 				{
 					DataGridWords.ItemsSource = list.Select(a => new { a.Word, a.Translate, a.CountShow, a.TimeShow, a.TimeCreate });
