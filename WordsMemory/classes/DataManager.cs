@@ -11,6 +11,7 @@ namespace RememberTheWords
 
 	public class DataManager
 	{
+		private int maxCountSaveFiles = 10;
 		private string directory = "data";
 		private string fileName = "words";
 		private string formatInFile = "yyyy_MM_dd_HH_mm_ss";
@@ -42,7 +43,7 @@ namespace RememberTheWords
 			fileDialog.InitialDirectory = info.FullName;
 			if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
-				Task.Run(() => RollBackTask(fileDialog.FileName));
+				RollBackTask(fileDialog.FileName);
 			}
 		}
 		private void RollBackTask(string fileName)
@@ -55,10 +56,10 @@ namespace RememberTheWords
 					string[] data = streamReader.ReadLine().Split(spliter[0]);					
 					WordSet wordSet = new WordSet();
 					wordSet.Word = data[0];
-					wordSet.Translate = data[1];					
-					wordSet.TimeShow = DateTime.Parse(data[3]);
-					wordSet.TimeCreate = DateTime.Parse(data[4]);
+					wordSet.Translate = data[1];
 					wordSet.CountShow = int.Parse(data[2]);
+					wordSet.TimeShow = DateTime.Parse(data[3]);
+					wordSet.TimeCreate = DateTime.Parse(data[4]);					
 					words.Add(wordSet);
 				}
 				SaveChanges();
@@ -82,7 +83,7 @@ namespace RememberTheWords
 			}
 			DirectoryInfo info = new DirectoryInfo(fi.FullName);
 			FileInfo[] files = info.GetFiles();
-			while (files.Length > 5)
+			while (files.Length > maxCountSaveFiles)
 			{
 				FileInfo latestFile = files[0];
 				int index = latestFile.Name.IndexOf("__");
