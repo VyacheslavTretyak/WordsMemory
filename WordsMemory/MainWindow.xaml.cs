@@ -103,7 +103,7 @@ namespace RememberTheWords
 
 		private void NextWord()
 		{
-			thread = Thread.CurrentThread;
+			thread = Thread.CurrentThread;			
 			while (true)
 			{
 				WordSet word = dataManager.NextWord(settings);
@@ -160,6 +160,8 @@ namespace RememberTheWords
 			wordsWindow.Top = System.Windows.SystemParameters.WorkArea.Height - wordsWindow.Height;
 			wordsWindow.Left = System.Windows.SystemParameters.WorkArea.Width - wordsWindow.Width;
 			wordsWindow.ShowDialog();
+			thread.Abort();
+			task = Task.Run(() => NextWord());
 			if (!isClosed)
 			{
 				Show();

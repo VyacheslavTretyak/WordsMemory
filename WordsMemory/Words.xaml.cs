@@ -86,7 +86,7 @@ namespace RememberTheWords
 			var item = DataGridWords.SelectedItem;			
 			string word = item.GetType().GetProperty("Word").GetValue(item).ToString();
 			string translate = item.GetType().GetProperty("Translate").GetValue(item).ToString();
-			Task.Run(() => dataManager.DeleteRow(word, translate ));
+			Task.Run(() => dataManager.DeleteRow(word, translate ));			
 			GetList();
 		}
 
