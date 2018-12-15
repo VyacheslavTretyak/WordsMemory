@@ -21,7 +21,7 @@ namespace RememberTheWords
 		private static DataManager instance = null;
 		public static DataManager GetInstance()
 		{
-			if(instance == null)
+			if (instance == null)
 			{
 				instance = new DataManager();
 			}
@@ -53,13 +53,13 @@ namespace RememberTheWords
 				words.Clear();
 				while (!streamReader.EndOfStream)
 				{
-					string[] data = streamReader.ReadLine().Split(spliter[0]);					
+					string[] data = streamReader.ReadLine().Split(spliter[0]);
 					WordSet wordSet = new WordSet();
 					wordSet.Word = data[0];
 					wordSet.Translate = data[1];
 					wordSet.CountShow = int.Parse(data[2]);
 					wordSet.TimeShow = DateTime.Parse(data[3]);
-					wordSet.TimeCreate = DateTime.Parse(data[4]);					
+					wordSet.TimeCreate = DateTime.Parse(data[4]);
 					words.Add(wordSet);
 				}
 				SaveChanges();
@@ -70,14 +70,14 @@ namespace RememberTheWords
 			Task.Run(() => SaveChangesTask());
 		}
 		private void SaveChangesTask()
-		{			
+		{
 			string time = DateTime.Now.ToString(formatInFile);
 			string fullpath = $"{directory}\\{fileName}__{time}.wrd";
-			FileInfo fi = new FileInfo(directory);			
+			FileInfo fi = new FileInfo(directory);
 			using (StreamWriter streamWriter = new StreamWriter(fullpath))
 			{
 				foreach (var row in words)
-				{					
+				{
 					streamWriter.WriteLine(row.ToLine());
 				}
 			}
@@ -110,53 +110,50 @@ namespace RememberTheWords
 		}
 		private void LoadList()
 		{
-			Task.Run(() =>
+			words = new List<WordSet>();
+			FileInfo fi = new FileInfo(directory);
+			if (!fi.Exists)
 			{
-				words = new List<WordSet>();
-				FileInfo fi = new FileInfo(directory);
-				if (!fi.Exists)
+				Directory.CreateDirectory(fi.FullName);
+			}
+			DirectoryInfo info = new DirectoryInfo(fi.FullName);
+			FileInfo[] files = info.GetFiles();
+			if (files.Length == 0)
+			{
+				throw new Exception("File not found!");
+			}
+			FileInfo newestFile = files[0];
+			int index = newestFile.Name.IndexOf("__");
+			string strTime = newestFile.Name.Substring(index + 2, 19);
+			DateTime newest = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+			foreach (FileInfo file in files)
+			{
+				index = file.Name.IndexOf("__");
+				strTime = file.Name.Substring(index + 2, 19);
+				DateTime dateTime = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
+				if (dateTime > newest)
 				{
-					Directory.CreateDirectory(fi.FullName);
+					newestFile = file;
+					newest = dateTime;
 				}
-				DirectoryInfo info = new DirectoryInfo(fi.FullName);
-				FileInfo[] files = info.GetFiles();
-				if(files.Length == 0)
+			}
+			using (StreamReader sr = new StreamReader(newestFile.FullName))
+			{
+				while (!sr.EndOfStream)
 				{
-					throw new Exception("File not found!");
-				}
-				FileInfo newestFile = files[0];
-				int index = newestFile.Name.IndexOf("__");
-				string strTime = newestFile.Name.Substring(index + 2, 19);
-				DateTime newest = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
-				foreach (FileInfo file in files)
-				{
-					index = file.Name.IndexOf("__");
-					strTime = file.Name.Substring(index + 2, 19);
-					DateTime dateTime = DateTime.ParseExact(strTime, formatInFile, CultureInfo.InvariantCulture);
-					if (dateTime > newest)
+					string[] line = sr.ReadLine().Split(spliter.ToCharArray());
+					WordSet word = new WordSet()
 					{
-						newestFile = file;
-						newest = dateTime;
-					}
-				}						
-				using (StreamReader sr = new StreamReader(newestFile.FullName))
-				{
-					while (!sr.EndOfStream)
-					{
-						string[] line = sr.ReadLine().Split(spliter.ToCharArray());
-						WordSet word = new WordSet()
-						{							
-							Word = line[0],
-							Translate = line[1],
-							CountShow = int.Parse(line[2]),
-							TimeShow = DateTime.ParseExact(line[3], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
-							TimeCreate = DateTime.ParseExact(line[4], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
-							
-						};
-						words.Add(word);
-					}
+						Word = line[0],
+						Translate = line[1],
+						CountShow = int.Parse(line[2]),
+						TimeShow = DateTime.ParseExact(line[3], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
+						TimeCreate = DateTime.ParseExact(line[4], WordSet.formatInWord, System.Globalization.CultureInfo.InvariantCulture),
+
+					};
+					words.Add(word);
 				}
-			});
+			}
 		}
 		public void CountReset(string word, string translate)
 		{

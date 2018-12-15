@@ -14,8 +14,8 @@
 		Title="Remember The Words" 
 		Height="300" Width="500"
 		MinHeight="300" MinWidth="500"
-		ResizeMode="NoResize" 
-		Icon="icon1.png">
+		ResizeMode="NoResize"
+		Icon="icon1.ico">
 	<!--FocusManager.FocusedElement="{x:Reference Name=TextBoxWord}" -->
 		
 

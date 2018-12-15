@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WordsMemory.Properties {
+namespace RememberTheWords.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

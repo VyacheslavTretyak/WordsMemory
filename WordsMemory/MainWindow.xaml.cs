@@ -47,14 +47,7 @@ namespace RememberTheWords
 			Top = System.Windows.SystemParameters.WorkArea.Height - Height;
 			Left = System.Windows.SystemParameters.WorkArea.Width - Width;			
 			Hide();
-			try
-			{
-				dataManager = DataManager.GetInstance();
-			}
-			catch(Exception ex)
-			{
-				MessageBox.Show(ex.Message);
-			}
+			
 
 			//load settings
 			RegistryManager registryManager = new RegistryManager();
@@ -66,7 +59,7 @@ namespace RememberTheWords
 			//notifyIcon
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			notifyIcon.Visible = true;
-			var icon = WordsMemory.Properties.Resources.icon1.GetHicon();
+			var icon = RememberTheWords.Properties.Resources.icon1.GetHicon();
 			notifyIcon.Icon = System.Drawing.Icon.FromHandle(icon);			
 			notifyIcon.MouseClick += NotifyIcon_MouseClick;
 			//contextMenu
@@ -92,6 +85,15 @@ namespace RememberTheWords
 			contextMenu.Items.Add(item);
 			//Start
 			task = Task.Run(() => NextWord());
+			//load data
+			try
+			{
+				dataManager = DataManager.GetInstance();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void ButtonRollback_Click(object sender, RoutedEventArgs e)
